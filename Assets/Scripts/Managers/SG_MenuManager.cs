@@ -16,6 +16,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class SG_MenuManager : MonoBehaviour
 {
+#region Variables
     /// <summary>
     /// Singleton
     /// </summary>
@@ -34,6 +35,14 @@ public class SG_MenuManager : MonoBehaviour
     /// </summary>
     [SerializeField] private GameObject m_pauseMenuButtons;
     /// <summary>
+    /// Reference to End stuff
+    /// </summary>
+    [SerializeField] private GameObject m_EndMenuButtons;
+    /// <summary>
+    /// Reference to options
+    /// </summary>
+    [SerializeField] private GameObject m_options;
+    /// <summary>
     /// Reference to loading bg, text, etc
     /// </summary>
     [SerializeField] private GameObject m_loadingGroup;
@@ -49,9 +58,13 @@ public class SG_MenuManager : MonoBehaviour
     /// Tipical button to pause the game
     /// </summary>
     [SerializeField] private GameObject m_pauseIngame;
+    [SerializeField] private Text m_scoreText;
 
     public bool isPaused { get { return m_pause; } }
 
+    #endregion
+
+#region MonoStuff
     // This runs before Start
     private void Awake()
     {
@@ -70,14 +83,20 @@ public class SG_MenuManager : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        // We need an audio manager, so if it doesn't exists, we instantiate it
-		if (SG_AudioManager.Instance == null && m_audioManagerPrefab != null)
-        {
-            Instantiate(m_audioManagerPrefab);
-        }
-        
         m_loadingGroup.SetActive(false);
+        m_mainMenuButtons.SetActive(false);
+        m_pauseMenuButtons.SetActive(false);
+        m_EndMenuButtons.SetActive(false);
+        m_pauseIngame.SetActive(false);
 
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            m_mainMenuButtons.SetActive(true);
+        }
+        else
+        {
+            m_pauseIngame.SetActive(true);
+        }
     }
 	
 	// Update is called once per frame
@@ -85,7 +104,9 @@ public class SG_MenuManager : MonoBehaviour
     {
 		
 	}
+    #endregion
 
+#region Load Scene
     /// <summary>
     /// Method called when pressing play button, it calls a corroutine
     /// </summary>
@@ -101,9 +122,13 @@ public class SG_MenuManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator LoadingScene(int sceneIndex, float delay = 5f)
     {
+        SG_AudioManager.Instance.StopForPause();
         m_loadingBar.fillAmount = 0f;
         m_loadingGroup.SetActive(true);
         m_mainMenuButtons.SetActive(false);
+        m_pauseMenuButtons.SetActive(false);
+        m_EndMenuButtons.SetActive(false);
+        m_options.SetActive(false);
 
         AsyncOperation ls = SceneManager.LoadSceneAsync(sceneIndex);
 
@@ -122,9 +147,20 @@ public class SG_MenuManager : MonoBehaviour
         if (sceneIndex == 0)
             m_mainMenuButtons.SetActive(true);
         else
+        {
             m_pauseIngame.SetActive(true);
-    }
+            m_pause = false;
+            Time.timeScale = 1f;
+            if (SG_ScoreManager.Instance != null)
+                SG_ScoreManager.Instance.ResetScore();
+        }
+            
 
+        SG_AudioManager.Instance.ResumeAudios();
+    }
+    #endregion
+
+#region MenuThings
     /// <summary>
     /// Method when pressing Exit button
     /// </summary>
@@ -142,8 +178,44 @@ public class SG_MenuManager : MonoBehaviour
         m_pauseMenuButtons.SetActive(_pause);
         m_pauseIngame.SetActive(!_pause);
         if (m_pause)
+        {
             Time.timeScale = 0f;
+            SG_AudioManager.Instance.StopForPause();     
+        }        
         else
+        {
             Time.timeScale = 1f;
+            SG_AudioManager.Instance.ResumeAudios();
+        }
     }
+    /// <summary>
+    /// Method that shows the endscreen
+    /// </summary>
+    public void EndGame()
+    {
+        m_pause = true;
+        Time.timeScale = 0f;
+        SG_AudioManager.Instance.StopForPause();
+        m_EndMenuButtons.SetActive(true);
+        SG_ScoreManager.Instance.CheckHighestScore();
+        m_scoreText.text = "Your current score is: " + SG_ScoreManager.Instance.Score + " and your highest score was: " + SG_ScoreManager.Instance.HighestScore;
+    }
+    /// <summary>
+    /// Method that shows or hides options
+    /// </summary>
+    /// <param name="show"></param>
+    public void ShowHideOptions(bool show)
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            m_mainMenuButtons.SetActive(!show);
+        }
+        else
+        {
+            m_pauseMenuButtons.SetActive(!show);
+        }
+
+        m_options.SetActive(show);
+    }
+#endregion
 }

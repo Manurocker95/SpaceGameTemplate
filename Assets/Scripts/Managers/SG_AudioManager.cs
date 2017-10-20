@@ -14,7 +14,7 @@ using UnityEngine;
 /// </summary>
 public class SG_AudioManager : MonoBehaviour
 {
-
+#region Variables
     /// <summary>
     /// Singleton
     /// </summary>
@@ -30,7 +30,9 @@ public class SG_AudioManager : MonoBehaviour
     /// Audio types (BGM or sound effect)
     /// </summary>
     public enum AUDIO_TYPE { BGM, SFX}
+    #endregion
 
+#region Mono Stuff
     // This runs before Start
     private void Awake()
     {
@@ -59,7 +61,9 @@ public class SG_AudioManager : MonoBehaviour
     {
 		
 	}
+    #endregion
 
+#region Sound Methods
     /// <summary>
     /// We play a sound loaded in real time
     /// </summary>
@@ -102,4 +106,37 @@ public class SG_AudioManager : MonoBehaviour
                 break;
         }
     }
+    /// <summary>
+    /// We stop every audiosource when pausing
+    /// </summary>
+    public void StopForPause()
+    {
+        foreach (AudioSource a in m_audioSources)
+        {
+            a.Pause();
+        }
+    }
+    /// <summary>
+    /// We resume every audiosource
+    /// </summary>
+    public void ResumeAudios()
+    {
+        foreach (AudioSource a in m_audioSources)
+        {
+            a.Play();
+           
+        }
+    }
+    /// <summary>
+    /// Mute all audiosources
+    /// </summary>
+    public void MuteAudios()
+    {
+        foreach (AudioSource a in m_audioSources)
+        {
+            a.mute = !a.mute;
+
+        }
+    }
+#endregion
 }

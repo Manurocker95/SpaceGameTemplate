@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class SG_EnemyRespawner : MonoBehaviour
 {
+#region Variables
     /// <summary>
     /// Singleton
     /// </summary>
@@ -36,7 +37,9 @@ public class SG_EnemyRespawner : MonoBehaviour
     /// Timer for respawning
     /// </summary>
     private float m_timer = 0f;
+    #endregion
 
+#region MonoStuff
     // This runs before Start
     private void Awake()
     {
@@ -87,7 +90,9 @@ public class SG_EnemyRespawner : MonoBehaviour
             }
         }
 	}
+    #endregion
 
+#region EnemyStuff
     /// <summary>
     /// Method that deletes an item from the list
     /// </summary>
@@ -109,4 +114,5 @@ public class SG_EnemyRespawner : MonoBehaviour
             m_enemyArrayList.Add(Instantiate(m_EnemyPrefabs[Random.Range(0, m_EnemyPrefabs.Length)], new Vector3(Random.Range(40,60), Random.Range(20, -20), 20),Quaternion.Euler(-90,180,0)));
         }
     }
+#endregion
 }

@@ -14,6 +14,11 @@ using UnityEngine;
 /// </summary>
 public class SG_Bullet : MonoBehaviour
 {
+    #region Variables
+    /// <summary>
+    /// If the bullet is player or enemie's
+    /// </summary>
+    [SerializeField] private bool m_playerBullet = true;
     /// <summary>
     /// Speed applied to the bullet when it moves
     /// </summary>
@@ -26,9 +31,11 @@ public class SG_Bullet : MonoBehaviour
     /// Damage that the bullet does
     /// </summary>
     [SerializeField] private int m_damage = 10;
+    #endregion
 
-	// Use this for initialization
-	void Start ()
+    #region MonoStuff
+    // Use this for initialization
+    void Start ()
     {
         Destroy(this.gameObject,m_lifeTime);
     }
@@ -45,11 +52,18 @@ public class SG_Bullet : MonoBehaviour
     /// <param name="other">Collider of the other object</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag=="Enemy")
+        if (m_playerBullet && other.tag=="Enemy")
+        {
+            other.gameObject.SendMessage("Collide", m_damage);
+            Destroy(this.gameObject);
+        }
+        else if (!m_playerBullet && other.tag == "Player")
         {
             other.gameObject.SendMessage("Collide", m_damage);
             Destroy(this.gameObject);
         }
         
     }
+
+#endregion
 }

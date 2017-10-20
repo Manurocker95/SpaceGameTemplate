@@ -14,18 +14,11 @@ using UnityEngine;
 /// </summary>
 public class SG_PlayerController : MonoBehaviour
 {
+    #region Variables
     /// <summary>
     /// Player gameobject Reference
     /// </summary>
     [SerializeField] private GameObject m_playerGO;
-    /// <summary>
-    /// Bullet prefab Referecence
-    /// </summary>
-    [SerializeField] private GameObject m_bulletPrefab;
-    /// <summary>
-    /// Positions where the player fire
-    /// </summary>
-    [SerializeField] private Transform[] m_firePosition;
     /// <summary>
     /// Player movement speed
     /// </summary>
@@ -46,8 +39,13 @@ public class SG_PlayerController : MonoBehaviour
     /// Time to fire
     /// </summary>
     [SerializeField] private float m_timeToFire = 0.4f;
+    /// <summary>
+    /// Player Reference
+    /// </summary>
+    [SerializeField] private SG_Player m_playerReference;
+#endregion
 
-   
+    #region Mono Stuff
     // Use this for initialization
     void Start ()
     {
@@ -56,6 +54,11 @@ public class SG_PlayerController : MonoBehaviour
         {
             m_playerGO = GameObject.Find("Player");
         }
+        if (m_playerReference == null && m_playerGO)
+        {
+            m_playerReference = m_playerGO.GetComponent<SG_Player>();
+        }
+
 	}
 	
 	// Update is called once per frame
@@ -73,7 +76,8 @@ public class SG_PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && m_timer>=m_timeToFire)
         {
             /// Fire
-            Fire();
+            m_playerReference.Fire();
+            m_timer = 0;
         }
         else
         {
@@ -82,18 +86,5 @@ public class SG_PlayerController : MonoBehaviour
                 m_timer += Time.deltaTime;
         }
     }
-    /// <summary>
-    /// Method that instantiate the prefab
-    /// </summary>
-    void Fire()
-    {
-        Debug.Log("Fire");
-        m_timer = 0;
-        SG_AudioManager.Instance.PlaySoundByPath("Sounds/shoot", SG_AudioManager.AUDIO_TYPE.SFX);
-        for (int i = 0; i < m_firePosition.Length; i++)
-        {
-            /// We instantiate the bullet so it can move
-            Instantiate(m_bulletPrefab, m_firePosition[i].position, m_firePosition[i].rotation);
-        }
-    }
+#endregion
 }

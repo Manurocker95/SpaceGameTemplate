@@ -16,6 +16,7 @@ using UnityEngine.UI;
 public class SG_ScoreManager : MonoBehaviour
 {
 
+#region Variables
     /// <summary>
     /// Singleton
     /// </summary>
@@ -29,7 +30,21 @@ public class SG_ScoreManager : MonoBehaviour
     /// Score value
     /// </summary>
     [SerializeField] private int m_score = 0;
+    /// <summary>
+    /// Highest score ever obtained
+    /// </summary>
+    private int m_highestScore = 0;
+    /// <summary>
+    /// Property for score
+    /// </summary>
+    public int Score { get { return m_score; } }
+    /// <summary>
+    /// Property for highest score
+    /// </summary>
+    public int HighestScore { get { return m_highestScore; } }
+    #endregion
 
+#region MonoStuff
     // This runs before Start
     private void Awake()
     {
@@ -51,6 +66,8 @@ public class SG_ScoreManager : MonoBehaviour
         m_score = 0;
         // We set the text for score
         m_scoreText.text = "Score: " + m_score + " pts";
+
+        m_highestScore = PlayerPrefs.GetInt("highestScore");
     }
 	
 	// Update is called once per frame
@@ -58,7 +75,9 @@ public class SG_ScoreManager : MonoBehaviour
     {
 		
 	}
+    #endregion
 
+#region ScoreStuff
     /// <summary>
     /// Method that adds score to the variable score and modify the text so we can see that add
     /// </summary>
@@ -68,4 +87,24 @@ public class SG_ScoreManager : MonoBehaviour
         m_score += _score;
         m_scoreText.text = "Score: " + m_score + " pts";
     }
+    /// <summary>
+    /// MEthod that sets to zero the score
+    /// </summary>
+    public void ResetScore()
+    {
+        m_score = 0;
+        m_scoreText.text = "Score: " + m_score + " pts";
+    }
+    /// <summary>
+    /// We save the score in game data if it's better than other score
+    /// </summary>
+    public void CheckHighestScore()
+    {
+        if (m_score > m_highestScore)
+        {
+            m_highestScore = m_score;
+            PlayerPrefs.SetInt("highestScore", m_score);
+        }
+    }
+#endregion
 }
