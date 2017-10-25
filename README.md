@@ -10,4 +10,4 @@ This has:
 * Basic Score Manager
 * Basic Enemy Spawner and Enemy AI
 * Basic Animator Stuff
-
+* Basic 3D Spaceships (I'm not so skilled in 3D modeling tho)
